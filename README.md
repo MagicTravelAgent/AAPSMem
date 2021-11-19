@@ -1,1 +1,1 @@
-# AAPSMem
+# AAPS Group Project: Memory Game
