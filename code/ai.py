@@ -65,6 +65,7 @@ def main():
     for i in range(10):
         print("iteration: ", i)
         move = ai.make_move()
+        #KAARTWAARDES PRINTEN
         print("moves: ", move[0],"and", move[1])
 
 main()
