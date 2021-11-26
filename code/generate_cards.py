@@ -3,6 +3,7 @@ import numpy as np
 import logging
 import sys
 
+
 class CardGenerator:
     def __init__(self):
         logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
