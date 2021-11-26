@@ -38,8 +38,15 @@ random.shuffle(cards)
 # apply shuffled values to the grid so each item in the grid is the true value
 card_val_grid = [cards[i*len(cards) // rows:(i+1)*len(cards) // rows] for i in range(rows)]
 
-# create card sprites
+
+# create card sprites grid
 card_grid = [[] for i in range(rows)]
+
+# load the images for the sprites
+img_test = pygame.image.load("memory.png")
+img_test.convert()
+rect = img_test.get_rect()
+
 for i in range(rows):
     # the first row needs to be a bite more offset from the top?
     if i == 0:
@@ -58,7 +65,6 @@ for i in range(rows):
                 card_grid[i].append(pygame.Rect(card_margin, card_grid[i-1][0].y + card_len + card_margin, card_len, card_len))
             else:
                 card_grid[i].append(pygame.Rect(card_grid[i][j-1].x + card_len + card_margin, card_grid[i-1][0].y + card_len + card_margin, card_len, card_len))
-
 
 # TODO create game mode select screen
 # game mode
@@ -176,6 +182,7 @@ while True:
 
     # Display who's turn it is
     turn_text = arial_20.render("Player's {} turn".format(str(player_turn + 1)), True, white)
+
     display.blit(turn_text, (580, 75))
 
     #Check win
