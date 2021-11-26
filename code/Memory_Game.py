@@ -38,8 +38,14 @@ random.shuffle(cards)
 # apply shuffled values to the grid so each item in the grid is the true value
 card_val_grid = [cards[i*len(cards) // rows:(i+1)*len(cards) // rows] for i in range(rows)]
 
-# create card sprites
+# create card sprites grid
 card_grid = [[] for i in range(rows)]
+
+# load the images for the sprites
+img_test = pygame.image.load("memory.png")
+img_test.convert()
+rect = img_test.get_rect()
+
 for i in range(rows):
     # the first row needs to be a bite more offset from the top?
     if i == 0:
