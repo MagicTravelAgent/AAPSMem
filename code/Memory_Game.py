@@ -1,7 +1,6 @@
 import os, random, time, pygame
 #Load modules and initialize display
 
-
 class memory_game:
 
     def __init__(self):
@@ -34,9 +33,18 @@ class memory_game:
         self.cards, self.card_val_grid, self.card_grid = self.card_gen()
 
         # load the images for the sprites
-        self.img_test = pygame.image.load("memory.png")
-        self.img_test.convert()
-        self.rect = self.img_test.get_rect()
+        # TODO different picture for each card value
+        self.face_down_card_img = pygame.image.load("memory.png").convert()
+        self.face_down_card = self.face_down_card_img.get_rect()
+
+        self.matched_img = pygame.image.load("matched.png").convert()
+        self.matched_card = self.matched_img.get_rect()
+
+        self.selected_card_img = pygame.image.load("selected.png").convert()
+        self.selected_card = self.selected_card_img.get_rect()
+
+        self.wrong_img = pygame.image.load("wrong.png").convert()
+        self.wrong_card = self.wrong_img.get_rect()
 
         # fill card_grid with images
         self.fill_grid()
@@ -137,17 +145,22 @@ class memory_game:
             for i in range(self.rows):
                 for j in range(self.columns):
                     pygame.draw.rect(self.display, (255, 255, 255), self.card_grid[i][j])
+                    self.face_down_card.topleft = self.card_grid[i][j].topleft
+                    self.display.blit(self.face_down_card_img, self.face_down_card)
 
 
     def draw_flipside(self):
         if self.exposed:
-                for i in self.exposed:
-                    # get value of the card
-                    text = str(self.card_val_grid[i[0]][i[1]])
-                    # create card value in certain font
-                    render = self.arial_50.render(text, True, self.black)
-                    # display to screen
-                    self.display.blit(render, (self.card_grid[i[0]][i[1]].x + self.card_hor_pad, self.card_grid[i[0]][i[1]].y + self.card_ver_pad))
+            for i in self.exposed:
+                # get value of the card
+                text = str(self.card_val_grid[i[0]][i[1]])
+                # create card value in certain font
+                render = self.arial_50.render(text, True, self.black)
+                # draw exposed card
+                self.selected_card.topleft = self.card_grid[i[0]][i[1]].topleft
+                self.display.blit(self.selected_card_img, self.selected_card)
+                # display number to screen
+                self.display.blit(render, (self.card_grid[i[0]][i[1]].x + self.card_hor_pad, self.card_grid[i[0]][i[1]].y + self.card_ver_pad))
 
         if self.matched:
             for i in self.matched:
@@ -155,7 +168,10 @@ class memory_game:
                 text = str(self.card_val_grid[i[0]][i[1]])
                 # create card value in certain font
                 render = self.arial_50.render(text, True, self.green)
-                # display to screen
+                # draw matched card
+                self.matched_card.topleft = self.card_grid[i[0]][i[1]].topleft
+                self.display.blit(self.matched_img, self.matched_card)
+                # display matched number to screen
                 self.display.blit(render, (self.card_grid[i[0]][i[1]].x + self.card_hor_pad, self.card_grid[i[0]][i[1]].y + self.card_ver_pad))
 
         if self.wrong:
@@ -164,6 +180,9 @@ class memory_game:
                 text = str(self.card_val_grid[i[0]][i[1]])
                 # create card value in certain font
                 render = self.arial_50.render(text, True, self.red)
+                # draw wrong card rectangle
+                self.wrong_card.topleft = self.card_grid[i[0]][i[1]].topleft
+                self.display.blit(self.wrong_img, self.wrong_card)
                 # display to screen
                 self.display.blit(render, (self.card_grid[i[0]][i[1]].x + self.card_hor_pad, self.card_grid[i[0]][i[1]].y + self.card_ver_pad))
 
