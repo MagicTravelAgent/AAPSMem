@@ -39,13 +39,8 @@ random.shuffle(cards)
 card_val_grid = [cards[i*len(cards) // rows:(i+1)*len(cards) // rows] for i in range(rows)]
 
 
-# create card sprites grid
+# create rectangles of the card grid
 card_grid = [[] for i in range(rows)]
-
-# load the images for the sprites
-img_test = pygame.image.load("memory.png")
-img_test.convert()
-rect = img_test.get_rect()
 
 for i in range(rows):
     # the first row needs to be a bite more offset from the top?
@@ -151,10 +146,26 @@ while True:
     #Clear screen
     display.fill(black)
 
+    # load the images for the sprites
+    # TODO different picture for each card value
+    face_down_card_img = pygame.image.load("memory.png").convert()
+    face_down_card = face_down_card_img.get_rect()
+
+    matched_img = pygame.image.load("matched.png").convert()
+    matched_card = matched_img.get_rect()
+
+    selected_card_img = pygame.image.load("selected.png").convert()
+    selected_card = selected_card_img.get_rect()
+
+    wrong_img = pygame.image.load("wrong.png").convert()
+    wrong_card = wrong_img.get_rect()
+
     #Draw cards
     for i in range(rows):
         for j in range(columns):
             pygame.draw.rect(display, (255, 255, 255), card_grid[i][j])
+            face_down_card.topleft = card_grid[i][j].topleft
+            display.blit(face_down_card_img, face_down_card)
             
     #Draw numbers
     if exposed:
@@ -163,7 +174,12 @@ while True:
             text = str(card_val_grid[i[0]][i[1]])
             # create card value in certain font
             render = arial_50.render(text, True, black)
-            # display to screen
+            
+            # display the selected card rect
+            selected_card.topleft = card_grid[i[0]][i[1]].topleft
+            display.blit(selected_card_img, selected_card)
+
+            # display number to screen
             display.blit(render, (card_grid[i[0]][i[1]].x + card_hor_pad, card_grid[i[0]][i[1]].y + card_ver_pad))
 
     if matched:
@@ -172,7 +188,12 @@ while True:
             text = str(card_val_grid[i[0]][i[1]])
             # create card value in certain font
             render = arial_50.render(text, True, green)
-            # display to screen
+
+            # display matched rect
+            matched_card.topleft = card_grid[i[0]][i[1]].topleft
+            display.blit(matched_img, matched_card)
+
+            # display number to screen
             display.blit(render, (card_grid[i[0]][i[1]].x + card_hor_pad, card_grid[i[0]][i[1]].y + card_ver_pad))
 
     if wrong:
@@ -181,8 +202,14 @@ while True:
             text = str(card_val_grid[i[0]][i[1]])
             # create card value in certain font
             render = arial_50.render(text, True, red)
-            # display to screen
+            
+            # display wrong rect
+            wrong_card.topleft = card_grid[i[0]][i[1]].topleft
+            display.blit(wrong_img, wrong_card)
+            
+            # display number to screen
             display.blit(render, (card_grid[i[0]][i[1]].x + card_hor_pad, card_grid[i[0]][i[1]].y + card_ver_pad))
+
 
     #Draw other stuff
     title = arial_35.render("Memory", True, white)
