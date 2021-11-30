@@ -5,7 +5,24 @@ class memory_game:
 
     def __init__(self):
         pygame.init()
-        self.screen = (1000,600)
+
+        # card size/shape
+        self.card_len = 100 # both width and length
+        self.card_margin = 10 # space inbetween cards
+        
+        # card top offset
+        self.vert_offset = 140
+
+        # number offset
+        self.card_hor_pad = 37
+        self.card_ver_pad = 22
+        
+
+        # board setup
+        self.rows = 5
+        self.columns = 8
+
+        self.screen = ((self.columns * (self.card_margin + self.card_len ) + self.card_margin), (self.rows * (self.card_margin + self.card_len) + self.vert_offset) + self.card_margin)
         pygame.display.set_caption("Memory")
         self.display = pygame.display.set_mode(self.screen)
 
@@ -18,16 +35,6 @@ class memory_game:
         self.arial_50 = pygame.font.SysFont("Arial", 50)
         self.arial_35 = pygame.font.SysFont("Arial", 35)
         self.arial_20 = pygame.font.SysFont("Arial", 20)
-
-        # card size/shape
-        self.card_len = 100
-        self.card_margin = 10
-        self.card_hor_pad = 37
-        self.card_ver_pad = 22
-
-        # board setup
-        self.rows = 4
-        self.columns = 5
 
         # create cards, value grid, and card grid.
         self.cards, self.card_val_grid, self.card_grid = self.card_gen()
@@ -84,7 +91,7 @@ class memory_game:
 
 
     def card_gen(self):
-        assert int((self.rows*self.columns/2)%2) == 0, "Combination of rows and columns does not create a even number"
+        assert int((self.rows*self.columns)%2) == 0, "Combination of rows and columns does not create a even number"
         # create list of numbers to represent card values
         cards = [i for i in range(int(self.rows*self.columns/2)) for j in range(2)]
         # shuffle these values
@@ -102,15 +109,13 @@ class memory_game:
             # the first row needs to be a bite more offset from the top?
             if i == 0:
                 for j in range(self.columns):
-
                     # first column alsop needs to be offset from the side
                     if j == 0:
-                        self.card_grid[i].append(pygame.Rect(self.card_margin, self.card_margin, self.card_len, self.card_len))
+                        self.card_grid[i].append(pygame.Rect(self.card_margin, self.card_margin + self.vert_offset, self.card_len, self.card_len))
                     else:
-                        self.card_grid[i].append(pygame.Rect(self.card_grid[i][j-1].x + self.card_len + self.card_margin, self.card_margin, self.card_len, self.card_len))
+                        self.card_grid[i].append(pygame.Rect(self.card_grid[i][j-1].x + self.card_len + self.card_margin, self.card_margin + self.vert_offset, self.card_len, self.card_len))
             else:
                 for j in range(self.columns):
-                    
                     # first column alsop needs to be offset from the side
                     if j == 0:
                         self.card_grid[i].append(pygame.Rect(self.card_margin, self.card_grid[i-1][0].y + self.card_len + self.card_margin, self.card_len, self.card_len))
@@ -212,10 +217,68 @@ class memory_game:
             # set back to false after change check.
             self.player_correct = False
 
-    def option_selection(self):
-        while self.game_state == 0:
-            pass
+    """
+    YET TO BE IMPLEMENTED:
+    Will contain buttons to change number of cards, and if one wants to play with 2 players or against an AI
+    """
+    def option_select(self):
 
+        # dark shade of the button
+        color_dark = (100,100,100)
+
+        # light shade of the button
+        color_light = (170,170,170)
+
+        # white color
+        color = (255,255,255)
+
+        # stores the width of the
+        # screen into a variable
+        width = 100
+
+        # stores the height of the
+        # screen into a variable
+        height = 100
+
+        # defining a font
+        smallfont = pygame.font.SysFont('Corbel',35)
+
+        # rendering a text written in
+        # this font
+        text = smallfont.render('quit' , True , color)
+
+        while self.game_state == 0:
+
+            for ev in pygame.event.get():
+
+                if ev.type == pygame.QUIT:
+                    pygame.quit()
+
+                #checks if a mouse is clicked
+                if ev.type == pygame.MOUSEBUTTONDOWN:
+
+                    #if the mouse is clicked on the
+                    # button the game is terminated
+                    if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40:
+                        self.game_state = 1
+
+            # stores the (x,y) coordinates into
+            # the variable as a tuple
+            mouse = pygame.mouse.get_pos()
+
+            # if mouse is hovered on a button it
+            # changes to lighter shade
+            if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40:
+                pygame.draw.rect(self.display,color_light,[width/2,height/2,140,40])
+            else:
+                pygame.draw.rect(self.display,color_dark,[width/2,height/2,140,40])
+
+            # superimposing the text onto our button
+            #self.display.blit(text , (width/2+50,height/2))
+
+            # updates the frames of the game
+            pygame.display.flip()
+            
     def game_loop(self):
         while self.game_state == 1:
             for event in pygame.event.get():
@@ -241,15 +304,15 @@ class memory_game:
 
             # Draw Title
             title = self.arial_35.render("Memory", True, self.white)
-            self.display.blit(title, (570, 10))
+            self.display.blit(title, (self.screen[0]/2 - 45, 10))
 
             # Display who's turn it is
             turn_text = self.arial_20.render("Player's {} turn".format(str(self.player_turn + 1)), True, self.white)
-            self.display.blit(turn_text, (580, 75))
+            self.display.blit(turn_text, (self.screen[0]/2 - 45, 55))
 
             # Display match score
             currentmatch_text = self.arial_20.render("Player 1: {}    Player 2: {}".format(self.game_score[0],self.game_score[1]), True, self.white)
-            self.display.blit(currentmatch_text, (580, 105))
+            self.display.blit(currentmatch_text, (self.screen[0]/2 - 82, 90))
 
             # Check win
             if len(self.matched) == self.rows*self.columns:
