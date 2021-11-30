@@ -71,11 +71,12 @@ for i in range(rows):
 game_mode = {0: 'humans', 1: 'ai'}
 
 # player scores (p1 = 0, p2 = 1)
-game_score = {0: 0, 1: 0}
-overall_score = {0: 0, 1: 0}
+game_score = {0: 0, 1: 0}           # current game matches
+overall_score = {0: 0, 1: 0}        # game wins
 
 # keeps track of who's turn it is
 player_turn = 0 # start with p1 (p1 = 0, p2 = 1)
+player_correct = False # stores if the player found match in their turn
 
 
 # list of currently exposed cards (max 2)
@@ -128,17 +129,24 @@ while True:
             exposed.clear()
             
             # increment player score
-            game_score[player_turn] =+ 1
+            game_score[player_turn] += 1
+
+            # player found a match
+            player_correct = True
             
         else: # no match
             wrong.extend(exposed)
             exposed.clear()
 
-        # change turn
-        if player_turn == 0:
-            player_turn = 1
-        else:
-            player_turn = 0
+        # change turn if the player did not get a match
+        if not player_correct:
+            if player_turn == 0:
+                player_turn = 1
+            else:
+                player_turn = 0
+
+        # set back to false after change check.
+        player_correct = False
 
     #Clear screen
     display.fill(black)
@@ -182,8 +190,10 @@ while True:
 
     # Display who's turn it is
     turn_text = arial_20.render("Player's {} turn".format(str(player_turn + 1)), True, white)
-
     display.blit(turn_text, (580, 75))
+
+    currentmatch_text = arial_20.render("Player 1: {}    Player 2: {}".format(game_score[0],game_score[1]), True, white)
+    display.blit(currentmatch_text, (580, 105))
 
     #Check win
     if len(matched) == 20:
