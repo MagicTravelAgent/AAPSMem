@@ -62,8 +62,17 @@ class memory_game:
         # list of cards which did not match in a turn (always 2)
         self.wrong = []
 
-        # gameloop
-        self.game_loop()
+        # progam loop
+        self.game_state = 0
+        self.program()
+
+
+    def program(self):
+        if self.game_state == 0:
+            self.option_select()
+        if self.game_state == 1:
+            # gameloop
+            self.game_loop()
 
 
     def card_gen(self):
@@ -184,8 +193,12 @@ class memory_game:
             # set back to false after change check.
             self.player_correct = False
 
+    def option_selection(self):
+        while self.game_state == 0:
+            pass
+
     def game_loop(self):
-        while True:
+        while self.game_state == 1:
             for event in pygame.event.get():
                 # Detect quit
                 if event.type == pygame.QUIT:
