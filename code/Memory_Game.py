@@ -1,10 +1,16 @@
 import os, random, time, pygame
-#Load modules and initialize display
+import numpy as np
+from generate_cards import CardGenerator
 
+
+#Load modules and initialize display
 class memory_game:
 
     def __init__(self):
         pygame.init()
+
+        # difficulty
+        self.difficulty = 1  # 0-10
 
         # card size/shape
         self.card_len = 100 # both width and length
@@ -38,11 +44,20 @@ class memory_game:
 
         # create cards, value grid, and card grid.
         self.cards, self.card_val_grid, self.card_grid = self.card_gen()
+        print(self.cards)
 
         # load the images for the sprites
         # TODO different picture for each card value
+        # generates and loads all cards using the CardGenerator:
+        self.card_generator = CardGenerator()
+        self.card_generator.set_difficulty(self.difficulty)
+        self.card_generator.set_size(self.card_len)
+        cards = self.card_generator.generate_cards(int(self.rows*self.columns))
+
+        self.images = [pygame.image.frombuffer(card.flatten(), (self.card_len, self.card_len), "RGB") for card in cards]
+
         self.face_down_card_img = pygame.image.load("../memory.png").convert()
-        print(self.face_down_card_img)
+
         self.face_down_card = self.face_down_card_img.get_rect()
 
         self.matched_img = pygame.image.load("../matched.png").convert()
@@ -112,16 +127,35 @@ class memory_game:
                 for j in range(self.columns):
                     # first column alsop needs to be offset from the side
                     if j == 0:
-                        self.card_grid[i].append(pygame.Rect(self.card_margin, self.card_margin + self.vert_offset, self.card_len, self.card_len))
+                        self.card_grid[i].append(pygame.Rect(
+                            self.card_margin,
+                            self.card_margin + self.vert_offset,
+                            self.card_len,
+                            self.card_len
+                        ))
                     else:
-                        self.card_grid[i].append(pygame.Rect(self.card_grid[i][j-1].x + self.card_len + self.card_margin, self.card_margin + self.vert_offset, self.card_len, self.card_len))
+                        self.card_grid[i].append(pygame.Rect(
+                            self.card_grid[i][j-1].x + self.card_len + self.card_margin,
+                            self.card_margin + self.vert_offset,
+                            self.card_len,
+                            self.card_len
+                        ))
             else:
                 for j in range(self.columns):
                     # first column alsop needs to be offset from the side
                     if j == 0:
-                        self.card_grid[i].append(pygame.Rect(self.card_margin, self.card_grid[i-1][0].y + self.card_len + self.card_margin, self.card_len, self.card_len))
+                        self.card_grid[i].append(pygame.Rect(
+                            self.card_margin,
+                            self.card_grid[i-1][0].y + self.card_len + self.card_margin,
+                            self.card_len, self.card_len
+                        ))
                     else:
-                        self.card_grid[i].append(pygame.Rect(self.card_grid[i][j-1].x + self.card_len + self.card_margin, self.card_grid[i-1][0].y + self.card_len + self.card_margin, self.card_len, self.card_len))
+                        self.card_grid[i].append(pygame.Rect(
+                            self.card_grid[i][j-1].x + self.card_len + self.card_margin,
+                            self.card_grid[i-1][0].y + self.card_len + self.card_margin,
+                            self.card_len,
+                            self.card_len
+                        ))
     
 
     def check_mouseclick(self):
@@ -133,7 +167,8 @@ class memory_game:
                 for i in range(self.rows):
                     for j in range(self.columns):
                         mouse_pos = list(pygame.mouse.get_pos())
-                        if mouse_pos[0] >= self.card_grid[i][j].x and mouse_pos[1] >= self.card_grid[i][j].y and mouse_pos[0] <= self.card_grid[i][j].x + self.card_len and mouse_pos[1] <= self.card_grid[i][j].y + self.card_len:
+                        if self.card_grid[i][j].x <= mouse_pos[0] <= self.card_grid[i][j].x + self.card_len and \
+                                self.card_grid[i][j].y <= mouse_pos[1] <= self.card_grid[i][j].y + self.card_len:
                             has_instance = False
                             for k in range(len(self.exposed)):
                                 if self.exposed[k] == [i, j]:
@@ -143,7 +178,7 @@ class memory_game:
                                 if self.matched[k] == [i, j]:
                                     has_instance = True
 
-                            if has_instance == False:
+                            if not has_instance:
                                 self.exposed.append([i, j])
 
 
@@ -163,8 +198,11 @@ class memory_game:
                 # create card value in certain font
                 render = self.arial_50.render(text, True, self.black)
                 # draw exposed card
+                image_index = self.cards[i[0]*self.columns+i[1]]
                 self.selected_card.topleft = self.card_grid[i[0]][i[1]].topleft
-                self.display.blit(self.selected_card_img, self.selected_card)
+                #self.display.blit(self.selected_card_img, self.selected_card)   # display placeholder
+                # display correct image:
+                self.display.blit(self.images[image_index], self.selected_card)
                 # display number to screen
                 self.display.blit(render, (self.card_grid[i[0]][i[1]].x + self.card_hor_pad, self.card_grid[i[0]][i[1]].y + self.card_ver_pad))
 
@@ -175,8 +213,10 @@ class memory_game:
                 # create card value in certain font
                 render = self.arial_50.render(text, True, self.green)
                 # draw matched card
+                image_index = self.cards[i[0] * self.columns + i[1]]
                 self.matched_card.topleft = self.card_grid[i[0]][i[1]].topleft
-                self.display.blit(self.matched_img, self.matched_card)
+                #self.display.blit(self.matched_img, self.matched_card)
+                self.display.blit(self.images[image_index], self.matched_card)
                 # display matched number to screen
                 self.display.blit(render, (self.card_grid[i[0]][i[1]].x + self.card_hor_pad, self.card_grid[i[0]][i[1]].y + self.card_ver_pad))
 
@@ -187,8 +227,10 @@ class memory_game:
                 # create card value in certain font
                 render = self.arial_50.render(text, True, self.red)
                 # draw wrong card rectangle
+                image_index = self.cards[i[0] * self.columns + i[1]]
                 self.wrong_card.topleft = self.card_grid[i[0]][i[1]].topleft
-                self.display.blit(self.wrong_img, self.wrong_card)
+                # self.display.blit(self.wrong_img, self.wrong_card)
+                self.display.blit(self.images[image_index], self.wrong_card)
                 # display to screen
                 self.display.blit(render, (self.card_grid[i[0]][i[1]].x + self.card_hor_pad, self.card_grid[i[0]][i[1]].y + self.card_ver_pad))
 

@@ -65,7 +65,6 @@ class CardGenerator:
         self.show_img(img)
         self.back_image = img
 
-
     def triangle(self, img):
         pass
 
@@ -75,11 +74,11 @@ class CardGenerator:
         fill_col = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         pt1 = (random.randint(-30, self.card_size), random.randint(-30,self.card_size))
         pt2 = (pt1[0]+rect_size1, pt1[1]+rect_size2)
-        cv2.rectangle(img, pt1, pt2, fill_col, random.randint(5, 20))
+        cv2.rectangle(img, pt1, pt2, fill_col, random.randint(2, 8))
 
     def circle(self, img):
         center = (random.randint(-30, self.card_size+30), random.randint(-30, self.card_size+30))
-        thickness = random.randint(5,15)
+        thickness = random.randint(2,8)
         radius = random.randint(30, int(self.card_size/2))
         fill_col = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         cv2.circle(img, center, radius, fill_col, thickness)
@@ -92,7 +91,7 @@ class CardGenerator:
             pt1 = (-30, random.randint(-30, self.card_size + 30))
             pt2 = (self.card_size + 30, random.randint(-30, self.card_size + 30))
         fill_col = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        thickness = random.randint(5,15)
+        thickness = random.randint(2,8)
         cv2.line(img, pt1, pt2, fill_col, thickness)
 
     def add_shape(self, img):
@@ -123,6 +122,8 @@ class CardGenerator:
             )
             self.cards.append(new_card)
         logging.info(f'{len(self.cards)} cards have been generated')
+        facings = [card.front_image for card in self.cards]
+        return facings
 
     def flip_card(self, index):
         if index >= self.n_cards or index < 0:
@@ -132,9 +133,10 @@ class CardGenerator:
         return self.cards[index].flip()
 
     def show_img(self, img):
-        cv2.imshow('test', img)
-        cv2.waitKey()
-        cv2.destroyAllWindows()
+        #cv2.imshow('test', img)
+        #cv2.waitKey()
+        #cv2.destroyAllWindows()
+        pass
 
 
 def debug():
