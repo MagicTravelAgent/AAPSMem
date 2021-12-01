@@ -41,16 +41,17 @@ class memory_game:
 
         # load the images for the sprites
         # TODO different picture for each card value
-        self.face_down_card_img = pygame.image.load("memory.png").convert()
+        self.face_down_card_img = pygame.image.load("../memory.png").convert()
+        print(self.face_down_card_img)
         self.face_down_card = self.face_down_card_img.get_rect()
 
-        self.matched_img = pygame.image.load("matched.png").convert()
+        self.matched_img = pygame.image.load("../matched.png").convert()
         self.matched_card = self.matched_img.get_rect()
 
-        self.selected_card_img = pygame.image.load("selected.png").convert()
+        self.selected_card_img = pygame.image.load("../selected.png").convert()
         self.selected_card = self.selected_card_img.get_rect()
 
-        self.wrong_img = pygame.image.load("wrong.png").convert()
+        self.wrong_img = pygame.image.load("../wrong.png").convert()
         self.wrong_card = self.wrong_img.get_rect()
 
         # fill card_grid with images
