@@ -9,12 +9,15 @@ from card import Card
 class CardGenerator:
     def __init__(self):
         logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+        self.font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
+        self.back_text = "Afgerond 3 jaar"
         self.difficulty = 0
         self.card_size = 100
         self.n_cards = 0
         self.cards = []
         self.back_image = None
         self.generate_back_image()
+
 
         self.shapes = [
             self.rectangle,
@@ -33,11 +36,35 @@ class CardGenerator:
         logging.debug(f'the size of the cards has been set to {card_size}x{card_size} pixels')
 
     def generate_back_image(self):
-        background = [random.random() * 50 for i in range(3)]
+        background = [random.random() * 120 for i in range(3)]
         img = np.full((self.card_size, self.card_size, 3), 0, dtype=np.uint8)
+        delta = 1/(self.card_size/10)  # value change per pixel
         for i in range(3):
             img[:, :, i] = background[i]
+        for i in range(self.card_size):
+            for j in range(self.card_size):
+                img[i, j, 0] = min(255, max(0, int(img[i, j, 0]-0.5*self.card_size*delta + j*delta)))
+                img[i, j, 1] = min(255, max(0, int(img[i, j, 0]-0.5*self.card_size*delta - i*delta)))
+                img[i, j, 2] = min(255, max(0, int(img[i, j, 0] - 0.5 * self.card_size * delta - i * delta*2)))
+
+        thickness = 3
+        font_size = 1
+        textsize = cv2.getTextSize(self.back_text, self.font, thickness, font_size)[0]
+        textX = int((img.shape[1] - textsize[0]) / 2)
+        textY = int((img.shape[0] + textsize[1]) / 2)
+        cv2.putText(
+            img,
+            text=self.back_text,
+            org=(textX, textY),
+            fontFace=self.font,
+            fontScale=font_size,
+            color=(80, 100, 150),
+            thickness=thickness
+        )
+
+        self.show_img(img)
         self.back_image = img
+
 
     def triangle(self, img):
         pass
@@ -112,7 +139,7 @@ class CardGenerator:
 
 def debug():
     cg = CardGenerator()
-    cg.set_difficulty(3)
+    cg.set_difficulty(8)
     cg.set_size(400)
     cg.generate_cards(4)
     flipped = cg.flip_card(2)
