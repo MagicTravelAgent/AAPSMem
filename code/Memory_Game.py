@@ -17,10 +17,16 @@ class memory_game:
         self.card_hor_pad = 37
         self.card_ver_pad = 22
         
+        # game settings
+        self.ai_difficulty = "easy"
+        self.game_difficulty = "easy"
+        self.player_mode = 0
 
         # board setup
-        self.rows = 5
-        self.columns = 8
+        self.rows = 4
+        self.columns = 6
+
+        self.text_list = None
 
         self.screen = ((self.columns * (self.card_margin + self.card_len ) + self.card_margin), (self.rows * (self.card_margin + self.card_len) + self.vert_offset) + self.card_margin)
         pygame.display.set_caption("Memory")
@@ -217,6 +223,73 @@ class memory_game:
             # set back to false after change check.
             self.player_correct = False
 
+            
+    def clunge_function(self, functionality):
+        smallfont = pygame.font.SysFont('Arial',35)
+        white_color = (255,255,255)
+
+        if functionality == "start" : 
+            self.screen = ((self.columns * (self.card_margin + self.card_len ) + self.card_margin), (self.rows * (self.card_margin + self.card_len) + self.vert_offset) + self.card_margin)
+            self.cards, self.card_val_grid, self.card_grid = self.card_gen()
+            self.fill_grid()
+            self.display = pygame.display.set_mode(self.screen)
+            self.game_state = 1
+            
+        elif functionality == "quit":
+            pygame.quit()
+
+        elif functionality == "ai_dif_easy":
+            self.ai_difficulty = "easy"
+            self.text_list["ai_difficulty_status"] = smallfont.render(self.ai_difficulty, True , white_color)
+
+        elif functionality == "ai_dif_med":
+            self.ai_difficulty = "medium"
+            self.text_list["ai_difficulty_status"] = smallfont.render(self.ai_difficulty, True , white_color)
+
+        elif functionality == "ai_dif_hard":
+            self.ai_difficulty = "hard"
+            self.text_list["ai_difficulty_status"] = smallfont.render(self.ai_difficulty, True , white_color)
+
+        elif functionality == "game_dif_easy":
+            self.game_difficulty = "easy"
+            self.text_list["game_difficulty_status"] = smallfont.render(self.game_difficulty, True , white_color)
+
+        elif functionality == "game_dif_medium":
+            self.game_difficulty = "medium"
+            self.text_list["game_difficulty_status"] = smallfont.render(self.game_difficulty, True , white_color)
+
+        elif functionality == "game_dif_hard":
+            self.game_difficulty = "hard"
+            self.text_list["game_difficulty_status"] = smallfont.render(self.game_difficulty, True , white_color)
+
+        elif functionality == "human_human":
+            self.player_mode = 0
+            self.text_list["players_status"] = smallfont.render(self.game_mode[self.player_mode], True , white_color)
+            
+        elif functionality == "human_ai":
+            self.player_mode = 1
+            self.text_list["players_status"] = smallfont.render(self.game_mode[self.player_mode], True , white_color)
+
+        elif functionality == "size_4x4":  
+            self.rows = 4
+            self.columns = 4
+            self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True , white_color)
+            
+        elif functionality == "size_4x7":
+            self.rows = 4
+            self.columns = 7
+            self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True , white_color)
+
+        elif functionality == "size_5x8":
+            self.rows = 5
+            self.columns = 8
+            self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True , white_color)
+            
+        elif functionality == "size_6x10":
+            self.rows = 6
+            self.columns = 10
+            self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True , white_color)
+
     """
     YET TO BE IMPLEMENTED:
     Will contain buttons to change number of cards, and if one wants to play with 2 players or against an AI
@@ -230,24 +303,76 @@ class memory_game:
         color_light = (170,170,170)
 
         # white color
-        color = (255,255,255)
+        white_color = (255,255,255)
 
-        # stores the width of the
-        # screen into a variable
-        width = 100
+        # Button location [width, height]
+        button_loc = {"start": [505, 10],
+        "quit" : [25, 10],
+        "ai_dif_easy" : [80, 130],
+        "ai_dif_med" : [265, 130],
+        "ai_dif_hard" : [450, 130],
+        "game_dif_easy" : [80, 260],
+        "game_dif_medium" : [265, 260],
+        "game_dif_hard" : [450, 260],
+        "human_human" : [140, 390],
+        "human_ai" : [390, 390],
+        "size_4x4" : [22, 530],
+        "size_4x7" : [184, 530],
+        "size_5x8" : [346, 530],
+        "size_6x10" : [508, 530]}
 
-        # stores the height of the
-        # screen into a variable
-        height = 100
+        button_width = 140
+        button_height = 40
 
         # defining a font
-        smallfont = pygame.font.SysFont('Corbel',35)
+        smallfont = pygame.font.SysFont('Arial',35)
 
-        # rendering a text written in
-        # this font
-        text = smallfont.render('quit' , True , color)
+        text_locations = {key: button_loc[key] for key in button_loc}
+        
+        text_locations2 = {"ai_difficulty" : [205, 70],
+        "game_difficulty" : [180, 205],
+        "players" : [155, 335],
+        "game_grid" : [155, 470],
+        "ai_difficulty_status" : [355, 70],
+        "game_difficulty_status" : [385, 205],
+        "players_status" : [375, 335],
+        "game_grid_status" : [385, 470]
+        }
+
+        text_locations.update(text_locations2)
+
+        # create text
+        self.text_list = {"start": smallfont.render('Start' , True , white_color),
+        "quit" : smallfont.render('Quit' , True , white_color),
+        "ai_difficulty" : smallfont.render('AI difficulty:' , True , white_color),
+        "ai_dif_easy" : smallfont.render('Easy' , True , white_color),
+        "ai_dif_med" : smallfont.render('Medium' , True , white_color),
+        "ai_dif_hard" : smallfont.render('Hard' , True , white_color),
+        "game_difficulty" : smallfont.render('Game Difficulty:' , True , white_color),
+        "game_dif_easy" : smallfont.render('Easy' , True , white_color),
+        "game_dif_medium" : smallfont.render('Medium' , True , white_color),
+        "game_dif_hard" : smallfont.render('Hard' , True , white_color),
+        "players" : smallfont.render('Who are playing:' , True , white_color),
+        "human_human" : smallfont.render('vs Human' , True , white_color),
+        "human_ai" : smallfont.render('vs AI' , True , white_color),
+        "game_grid" : smallfont.render('How many cards:' , True , white_color),
+        "size_4x4" : smallfont.render('4 x 4' , True , white_color),
+        "size_4x7" : smallfont.render('4 x 7' , True , white_color),
+        "size_5x8" : smallfont.render('5 x 8' , True , white_color),
+        "size_6x10" : smallfont.render('6 x 10' , True , white_color),
+        "ai_difficulty_status" : smallfont.render(self.ai_difficulty, True , white_color),
+        "game_difficulty_status" : smallfont.render(self.game_difficulty, True , white_color),
+        "players_status" : smallfont.render(self.game_mode[self.player_mode], True , white_color),
+        "game_grid_status" : smallfont.render(str(self.rows)+" x "+str(self.columns), True , white_color)}
+        
+        self.rows = 4
+        self.columns = 4
+        self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True , white_color)
 
         while self.game_state == 0:
+
+            # Clear screen
+            self.display.fill(self.black)
 
             for ev in pygame.event.get():
 
@@ -256,25 +381,24 @@ class memory_game:
 
                 #checks if a mouse is clicked
                 if ev.type == pygame.MOUSEBUTTONDOWN:
+                    for key in button_loc:
+                        b_width, b_height = button_loc[key]
+                        if b_width <= mouse[0] <= b_width + button_width and b_height <= mouse[1] <= b_height + button_height:
+                            self.clunge_function(key)
 
-                    #if the mouse is clicked on the
-                    # button the game is terminated
-                    if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40:
-                        self.game_state = 1
-
-            # stores the (x,y) coordinates into
-            # the variable as a tuple
+            # mouse coordinates
             mouse = pygame.mouse.get_pos()
 
-            # if mouse is hovered on a button it
-            # changes to lighter shade
-            if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40:
-                pygame.draw.rect(self.display,color_light,[width/2,height/2,140,40])
-            else:
-                pygame.draw.rect(self.display,color_dark,[width/2,height/2,140,40])
+            # if mouse is hovered on a button it changes to lighter shade
+            for width, height in button_loc.values():
+                if width <= mouse[0] <= width+button_width and height <= mouse[1] <= height+button_height:
+                    pygame.draw.rect(self.display,color_light,[width,height,button_width,button_height])
+                else:
+                    pygame.draw.rect(self.display,color_dark,[width,height,button_width,button_height])
 
-            # superimposing the text onto our button
-            #self.display.blit(text , (width/2+50,height/2))
+            # superimposing text onto a button
+            for ids in text_locations.keys():
+                self.display.blit(self.text_list[ids] , (text_locations[ids][0]+20,text_locations[ids][1]))
 
             # updates the frames of the game
             pygame.display.flip()
