@@ -1,4 +1,4 @@
-import os, random, time, pygame
+import os, random, time, pygame, ai
 #Load modules and initialize display
 
 class memory_game:
@@ -234,6 +234,8 @@ class memory_game:
             self.fill_grid()
             self.display = pygame.display.set_mode(self.screen)
             self.game_state = 1
+            if self.player_mode == 1:
+                ai_player = ai.AI(self.rows, self.columns, mode = self.ai_difficulty)
             
         elif functionality == "quit":
             pygame.quit()
