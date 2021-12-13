@@ -12,8 +12,8 @@ class memory_game:
         self.difficulty = 1  # 0-10
 
         # card size/shape
-        self.card_len = 100 # both width and length
-        self.card_margin = 10 # space inbetween cards
+        self.card_len = 100    # both width and length
+        self.card_margin = 10  # space inbetween cards
         
         # card top offset
         self.vert_offset = 140
@@ -37,7 +37,7 @@ class memory_game:
         pygame.display.set_caption("Memory")
         self.display = pygame.display.set_mode(self.screen)
 
-        #Define objects and generate number grid
+        # Define objects and generate number grid
         self.white = (255, 255, 255)
         self.black = (0, 0, 0)
         self.red = (255, 0, 0)
@@ -49,7 +49,6 @@ class memory_game:
 
         # create cards, value grid, and card grid.
         self.cards, self.card_val_grid, self.card_grid = self.card_gen()
-        print(self.cards)
 
         # load the images for the sprites
         # TODO different picture for each card value
@@ -386,28 +385,30 @@ class memory_game:
         text_locations.update(text_locations2)
 
         # create text
-        self.text_list = {"start": smallfont.render('Start' , True , white_color),
-        "quit" : smallfont.render('Quit' , True , white_color),
-        "ai_difficulty" : smallfont.render('AI difficulty:' , True , white_color),
-        "ai_dif_easy" : smallfont.render('Easy' , True , white_color),
-        "ai_dif_med" : smallfont.render('Medium' , True , white_color),
-        "ai_dif_hard" : smallfont.render('Hard' , True , white_color),
-        "game_difficulty" : smallfont.render('Game Difficulty:' , True , white_color),
-        "game_dif_easy" : smallfont.render('Easy' , True , white_color),
-        "game_dif_medium" : smallfont.render('Medium' , True , white_color),
-        "game_dif_hard" : smallfont.render('Hard' , True , white_color),
-        "players" : smallfont.render('Who are playing:' , True , white_color),
-        "human_human" : smallfont.render('vs Human' , True , white_color),
-        "human_ai" : smallfont.render('vs AI' , True , white_color),
-        "game_grid" : smallfont.render('How many cards:' , True , white_color),
-        "size_4x4" : smallfont.render('4 x 4' , True , white_color),
-        "size_4x7" : smallfont.render('4 x 7' , True , white_color),
-        "size_5x8" : smallfont.render('5 x 8' , True , white_color),
-        "size_6x10" : smallfont.render('6 x 10' , True , white_color),
-        "ai_difficulty_status" : smallfont.render(self.ai_difficulty, True , white_color),
-        "game_difficulty_status" : smallfont.render(self.game_difficulty, True , white_color),
-        "players_status" : smallfont.render(self.game_mode[self.player_mode], True , white_color),
-        "game_grid_status" : smallfont.render(str(self.rows)+" x "+str(self.columns), True , white_color)}
+        self.text_list = {
+            "start": smallfont.render('Start' , True , white_color),
+            "quit" : smallfont.render('Quit' , True , white_color),
+            "ai_difficulty": smallfont.render('AI difficulty:' , True , white_color),
+            "ai_dif_easy": smallfont.render('Easy' , True , white_color),
+            "ai_dif_med": smallfont.render('Medium' , True , white_color),
+            "ai_dif_hard": smallfont.render('Hard' , True , white_color),
+            "game_difficulty": smallfont.render('Game Difficulty:' , True , white_color),
+            "game_dif_easy": smallfont.render('Easy' , True , white_color),
+            "game_dif_medium": smallfont.render('Medium' , True , white_color),
+            "game_dif_hard": smallfont.render('Hard' , True , white_color),
+            "players": smallfont.render('Who are playing:' , True , white_color),
+            "human_human": smallfont.render('vs Human' , True , white_color),
+            "human_ai": smallfont.render('vs AI' , True , white_color),
+            "game_grid": smallfont.render('How many cards:' , True , white_color),
+            "size_4x4": smallfont.render('4 x 4' , True , white_color),
+            "size_4x7": smallfont.render('4 x 7' , True , white_color),
+            "size_5x8": smallfont.render('5 x 8' , True , white_color),
+            "size_6x10": smallfont.render('6 x 10' , True , white_color),
+            "ai_difficulty_status": smallfont.render(self.ai_difficulty, True , white_color),
+            "game_difficulty_status": smallfont.render(self.game_difficulty, True , white_color),
+            "players_status": smallfont.render(self.game_mode[self.player_mode], True , white_color),
+            "game_grid_status": smallfont.render(str(self.rows)+" x "+str(self.columns), True , white_color)
+        }
         
         self.rows = 4
         self.columns = 4
