@@ -111,6 +111,8 @@ class CardGenerator:
         return img
 
     def generate_cards(self, n_cards):
+        self.cards = []
+        logging.debug(f'Generating cards with difficulty {self.difficulty}')
         background = np.array([random.random()*60 for i in range(3)])
         self.n_cards = n_cards
 
