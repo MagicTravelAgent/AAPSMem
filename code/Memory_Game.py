@@ -61,17 +61,17 @@ class memory_game:
 
         self.images = [pygame.image.frombuffer(card.flatten(), (self.card_len, self.card_len), "RGB") for card in cards]
 
-        self.face_down_card_img = pygame.image.load("../memory.png").convert()
+        self.face_down_card_img = pygame.image.load("memory.png").convert()
 
         self.face_down_card = self.face_down_card_img.get_rect()
 
-        self.matched_img = pygame.image.load("../matched.png").convert()
+        self.matched_img = pygame.image.load("matched.png").convert()
         self.matched_card = self.matched_img.get_rect()
 
-        self.selected_card_img = pygame.image.load("../selected.png").convert()
+        self.selected_card_img = pygame.image.load("selected.png").convert()
         self.selected_card = self.selected_card_img.get_rect()
 
-        self.wrong_img = pygame.image.load("../wrong.png").convert()
+        self.wrong_img = pygame.image.load("wrong.png").convert()
         self.wrong_card = self.wrong_img.get_rect()
 
         # fill card_grid with images
@@ -108,7 +108,10 @@ class memory_game:
             self.option_select()
         if self.game_state == 1:
             # gameloop
-            self.game_loop()
+            if self.player_mode == 0:
+                self.game_loop()
+            else:
+                self.game_loop_ai()
 
 
     def card_gen(self):
@@ -241,6 +244,8 @@ class memory_game:
 
     def check_match(self):
             # check if they match
+            if self.player_mode == 1:
+                self.ai_player.observe_opp_move(self.exposed,[self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]],self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]]], self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]] == self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]])
             if self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]] == self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]]:
                 self.matched.extend(self.exposed)
                 self.exposed.clear()
@@ -275,9 +280,11 @@ class memory_game:
             self.cards, self.card_val_grid, self.card_grid = self.card_gen()
             self.fill_grid()
             self.display = pygame.display.set_mode(self.screen)
-            self.game_state = 1
+
             if self.player_mode == 1:
-                ai_player = ai.AI(self.rows, self.columns, mode = self.ai_difficulty)
+                self.ai_player = ai.AI(self.rows, self.columns, mode = self.ai_difficulty)
+
+            self.game_state = 1
             
         elif functionality == "quit":
             pygame.quit()
@@ -494,5 +501,96 @@ class memory_game:
             if self.wrong:
                 time.sleep(1)
                 self.wrong.clear()
+
+    def game_loop_ai(self):
+         while self.game_state == 1:
+            for event in pygame.event.get():
+                # Detect quit
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+            
+            if self.player_turn == 0:
+            # Check for mouse click
+                self.check_mouseclick()
+            
+                # if two cards have been turned 
+                if len(self.exposed) == 2:
+                    self.check_match()
+
+                # Clear screen
+                self.display.fill(self.black)
+
+                # Draw cards
+                self.draw_cards()
+
+                # Draw numbers of the card (when flipped)
+                self.draw_flipside()
+
+                # Draw Title
+                title = self.arial_35.render("Memory", True, self.white)
+                self.display.blit(title, (self.screen[0]/2 - 45, 10))
+
+                # Display who's turn it is
+                turn_text = self.arial_20.render("Player's {} turn".format(str(self.player_turn + 1)), True, self.white)
+                self.display.blit(turn_text, (self.screen[0]/2 - 45, 55))
+
+                # Display match score
+                currentmatch_text = self.arial_20.render("Player 1: {}    Player 2: {}".format(self.game_score[0],self.game_score[1]), True, self.white)
+                self.display.blit(currentmatch_text, (self.screen[0]/2 - 82, 90))
+
+                # Check win
+                if len(self.matched) == self.rows*self.columns:
+                    self.display.fill(self.black)
+                    win = self.arial_200.render("You win!", True, self.green)
+                    self.display.blit(win, (40, 105))
+                    pygame.display.flip()
+                    break
+                
+                pygame.display.flip()
+                if self.wrong:
+                    time.sleep(1)
+                    self.wrong.clear()
+                
+            if self.player_turn == 1:
+                self.exposed.append(self.ai_player.make_first_move())
+                self.exposed.append(self.ai_player.make_second_move(self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]]))
+                self.ai_player.update_second_move(self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]])
+                # if two cards have been turned 
+                if len(self.exposed) == 2:
+                    self.check_match()
+
+                # Clear screen
+                self.display.fill(self.black)
+
+                # Draw cards
+                self.draw_cards()
+
+                # Draw numbers of the card (when flipped)
+                self.draw_flipside()
+
+                # Draw Title
+                title = self.arial_35.render("Memory", True, self.white)
+                self.display.blit(title, (self.screen[0]/2 - 45, 10))
+
+                # Display who's turn it is
+                turn_text = self.arial_20.render("Player's {} turn".format(str(self.player_turn + 1)), True, self.white)
+                self.display.blit(turn_text, (self.screen[0]/2 - 45, 55))
+
+                # Display match score
+                currentmatch_text = self.arial_20.render("Player 1: {}    Player 2: {}".format(self.game_score[0],self.game_score[1]), True, self.white)
+                self.display.blit(currentmatch_text, (self.screen[0]/2 - 82, 90))
+
+                # Check win
+                if len(self.matched) == self.rows*self.columns:
+                    self.display.fill(self.black)
+                    win = self.arial_200.render("You win!", True, self.green)
+                    self.display.blit(win, (40, 105))
+                    pygame.display.flip()
+                    break
+                
+                pygame.display.flip()
+                if self.wrong:
+                    time.sleep(1)
+                    self.wrong.clear()
 
 mg = memory_game()
