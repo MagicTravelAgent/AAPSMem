@@ -107,6 +107,7 @@ class MemoryGame:
         card_difficulty = self.game_to_card_difficulties[self.game_difficulty]
         self.card_generator.set_difficulty(card_difficulty)
         self.card_generator.set_size(self.card_len)
+        # generate cards with card generator:
         cards = self.card_generator.generate_cards(int(self.rows * self.columns))
         self.images = [pygame.image.frombuffer(card.flatten(), (self.card_len, self.card_len), "RGB") for card in cards]
 
@@ -115,7 +116,7 @@ class MemoryGame:
             if self.game_state == 0:
                 self.option_select()
             if self.game_state == 1:
-                # gameloop
+                # game loop
                 if self.player_mode == 0:
                     self.game_loop()
                 else:
@@ -306,7 +307,6 @@ class MemoryGame:
 
             self.game_state = 1
 
-
         elif functionality == "quit":
             pygame.quit()
 
@@ -357,8 +357,11 @@ class MemoryGame:
         elif functionality == "size_5x8":
             self.rows = 5
             self.columns = 8
-            self.text_list["game_grid_status"] = smallfont.render(str(self.rows) + " x " + str(self.columns), True,
-                                                                  white_color)
+            self.text_list["game_grid_status"] = smallfont.render(
+                str(self.rows) + " x " + str(self.columns),
+                True,
+                white_color
+            )
 
         elif functionality == "size_6x10":
             self.rows = 6
@@ -366,6 +369,7 @@ class MemoryGame:
             self.text_list["game_grid_status"] = smallfont.render(str(self.rows) + " x " + str(self.columns), True,
                                                                   white_color)
 
+    # TODO:
     """
     YET TO BE IMPLEMENTED:
     Will contain buttons to change number of cards, and if one wants to play with 2 players or against an AI
@@ -410,52 +414,49 @@ class MemoryGame:
 
         text_locations = {key: button_loc[key] for key in button_loc}
 
-        text_locations2 = {"ai_difficulty": [205, 70],
-                           "game_difficulty": [180, 205],
-                           "players": [95, 335],
-                           "game_grid": [155, 470],
-                           "ai_difficulty_status": [355, 70],
-                           "game_difficulty_status": [385, 205],
-                           "players_status": [405, 335],
-                           "game_grid_status": [385, 470]
-
-                           }
+        text_locations2 = {
+            "ai_difficulty": [205, 70],
+            "game_difficulty": [180, 205],
+            "players": [95, 335],
+            "game_grid": [155, 470],
+            "ai_difficulty_status": [355, 70],
+            "game_difficulty_status": [385, 205],
+            "players_status": [405, 335],
+            "game_grid_status": [385, 470]
+        }
 
         text_locations.update(text_locations2)
 
-        # create text
-
-        self.text_list = {"start": smallfont.render('Start', True, white_color),
-                          "quit": smallfont.render('Quit', True, white_color),
-                          "ai_difficulty": smallfont.render('AI difficulty:', True, white_color),
-                          "ai_dif_easy": smallfont.render('Easy', True, white_color),
-                          "ai_dif_med": smallfont.render('Medium', True, white_color),
-                          "ai_dif_hard": smallfont.render('Hard', True, white_color),
-                          "game_difficulty": smallfont.render('Game Difficulty:', True, white_color),
-                          "game_dif_easy": smallfont.render('Easy', True, white_color),
-                          "game_dif_medium": smallfont.render('Medium', True, white_color),
-                          "game_dif_hard": smallfont.render('Hard', True, white_color),
-                          "players": smallfont.render('You are playing against:', True, white_color),
-                          "human_human": smallfont.render('Human', True, white_color),
-                          "human_ai": smallfont.render('AI', True, white_color),
-                          "game_grid": smallfont.render('How many cards:', True, white_color),
-                          "size_4x4": smallfont.render('4 x 4', True, white_color),
-                          "size_4x7": smallfont.render('4 x 7', True, white_color),
-                          "size_5x8": smallfont.render('5 x 8', True, white_color),
-                          "size_6x10": smallfont.render('6 x 10', True, white_color),
-                          "ai_difficulty_status": smallfont.render(self.ai_difficulty, True, white_color),
-                          "game_difficulty_status": smallfont.render(self.game_difficulty, True, white_color),
-                          "players_status": smallfont.render(self.game_mode[self.player_mode], True, white_color),
-                          "game_grid_status": smallfont.render(str(self.rows) + " x " + str(self.columns), True,
-                                                               white_color)}
-
         self.rows = 4
         self.columns = 4
-        self.text_list["game_grid_status"] = smallfont.render(str(self.rows) + " x " + str(self.columns), True,
-                                                              white_color)
+
+        # create text
+        self.text_list = {
+            "start": smallfont.render('Start', True, white_color),
+            "quit": smallfont.render('Quit', True, white_color),
+            "ai_difficulty": smallfont.render('AI difficulty:', True, white_color),
+            "ai_dif_easy": smallfont.render('Easy', True, white_color),
+            "ai_dif_med": smallfont.render('Medium', True, white_color),
+            "ai_dif_hard": smallfont.render('Hard', True, white_color),
+            "game_difficulty": smallfont.render('Game Difficulty:', True, white_color),
+            "game_dif_easy": smallfont.render('Easy', True, white_color),
+            "game_dif_medium": smallfont.render('Medium', True, white_color),
+            "game_dif_hard": smallfont.render('Hard', True, white_color),
+            "players": smallfont.render('You are playing against:', True, white_color),
+            "human_human": smallfont.render('Human', True, white_color),
+            "human_ai": smallfont.render('AI', True, white_color),
+            "game_grid": smallfont.render('How many cards:', True, white_color),
+            "size_4x4": smallfont.render('4 x 4', True, white_color),
+            "size_4x7": smallfont.render('4 x 7', True, white_color),
+            "size_5x8": smallfont.render('5 x 8', True, white_color),
+            "size_6x10": smallfont.render('6 x 10', True, white_color),
+            "ai_difficulty_status": smallfont.render(self.ai_difficulty, True, white_color),
+            "game_difficulty_status": smallfont.render(self.game_difficulty, True, white_color),
+            "players_status": smallfont.render(self.game_mode[self.player_mode], True, white_color),
+            "game_grid_status": smallfont.render(str(self.rows) + " x " + str(self.columns), True, white_color)
+        }
 
         while self.game_state == 0:
-
             # Clear screen
             self.display.fill(self.black)
 
@@ -468,8 +469,8 @@ class MemoryGame:
                 if ev.type == pygame.MOUSEBUTTONDOWN:
                     for key in button_loc:
                         b_width, b_height = button_loc[key]
-                        if b_width <= mouse[0] <= b_width + button_width and b_height <= mouse[
-                            1] <= b_height + button_height:
+                        if b_width <= mouse[0] <= b_width + button_width and \
+                                b_height <= mouse[1] <= b_height + button_height:
                             self.clunge_function(key)
 
             # mouse coordinates
