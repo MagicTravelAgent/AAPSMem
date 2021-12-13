@@ -12,19 +12,19 @@ class MemoryGame:
         self.card_generator = CardGenerator()
 
         # difficulty
-        self.difficulty = 1    # 0-10
+        self.difficulty = 1  # 0-10
 
         # card size/shape
-        self.card_len = 100    # both width and length
+        self.card_len = 100  # both width and length
         self.card_margin = 10  # space inbetween cards
-        
+
         # card top offset
         self.vert_offset = 140
 
         # number offset
         self.card_hor_pad = 37
         self.card_ver_pad = 22
-        
+
         # game settings
         self.ai_difficulty = "easy"
         self.game_to_card_difficulties = {
@@ -83,11 +83,11 @@ class MemoryGame:
         self.game_mode = {0: 'humans', 1: 'ai'}
 
         # player scores (p1 = 0, p2 = 1)
-        self.game_score = {0: 0, 1: 0}           # current game matches
-        self.overall_score = {0: 0, 1: 0}        # game wins
+        self.game_score = {0: 0, 1: 0}  # current game matches
+        self.overall_score = {0: 0, 1: 0}  # game wins
 
         # keeps track of who's turn it is
-        self.player_turn = 0         # start with p1 (p1 = 0, p2 = 1)
+        self.player_turn = 0  # start with p1 (p1 = 0, p2 = 1)
         self.player_correct = False  # stores if the player found match in their turn
 
         # list of currently exposed cards (max 2)
@@ -121,18 +121,17 @@ class MemoryGame:
             else:
                 self.game_loop_ai()
 
-
     def card_gen(self):
-        assert int((self.rows*self.columns) % 2) == 0, "Combination of rows and columns does not create a even number"
+        assert int((self.rows * self.columns) % 2) == 0, "Combination of rows and columns does not create a even number"
         # create list of numbers to represent card values
-        cards = [i for i in range(int(self.rows*self.columns/2)) for j in range(2)]
+        cards = [i for i in range(int(self.rows * self.columns / 2)) for j in range(2)]
         # shuffle these values
         random.shuffle(cards)
         # apply shuffled values to the grid so each item in the grid is the true value
-        card_val_grid = [cards[i*len(cards) // self.rows:(i+1)*len(cards) // self.rows] for i in range(self.rows)]
+        card_val_grid = [cards[i * len(cards) // self.rows:(i + 1) * len(cards) // self.rows] for i in range(self.rows)]
         # create card sprites grid
         card_grid = [[] for i in range(self.rows)]
-        # generate the actual cards
+        # generate the actual cardsL
         self.generate_cards()
         return cards, card_val_grid, card_grid
 
@@ -152,7 +151,7 @@ class MemoryGame:
                         ))
                     else:
                         self.card_grid[i].append(pygame.Rect(
-                            self.card_grid[i][j-1].x + self.card_len + self.card_margin,
+                            self.card_grid[i][j - 1].x + self.card_len + self.card_margin,
                             self.card_margin + self.vert_offset,
                             self.card_len,
                             self.card_len
@@ -163,13 +162,13 @@ class MemoryGame:
                     if j == 0:
                         self.card_grid[i].append(pygame.Rect(
                             self.card_margin,
-                            self.card_grid[i-1][0].y + self.card_len + self.card_margin,
+                            self.card_grid[i - 1][0].y + self.card_len + self.card_margin,
                             self.card_len, self.card_len
                         ))
                     else:
                         self.card_grid[i].append(pygame.Rect(
-                            self.card_grid[i][j-1].x + self.card_len + self.card_margin,
-                            self.card_grid[i-1][0].y + self.card_len + self.card_margin,
+                            self.card_grid[i][j - 1].x + self.card_len + self.card_margin,
+                            self.card_grid[i - 1][0].y + self.card_len + self.card_margin,
                             self.card_len,
                             self.card_len
                         ))
@@ -208,7 +207,7 @@ class MemoryGame:
         if self.exposed:
             for i in self.exposed:
                 # draw exposed card
-                image_index = self.cards[i[0]*self.columns+i[1]]
+                image_index = self.cards[i[0] * self.columns + i[1]]
                 self.selected_card.topleft = self.card_grid[i[0]][i[1]].topleft
                 # display correct image:
                 self.display.blit(self.images[image_index], self.selected_card)
@@ -236,9 +235,12 @@ class MemoryGame:
     def check_match(self):
         # check if they match
         if self.player_mode == 1:
-            self.ai_player.observe_opp_move(self.exposed,[self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]],self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]]], self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]] == self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]])
-        if self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]] == self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]]:
-
+            self.ai_player.observe_opp_move(self.exposed, [self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]],
+                                                           self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]]],
+                                            self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]] ==
+                                            self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]])
+        if self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]] == self.card_val_grid[self.exposed[1][0]][
+            self.exposed[1][1]]:
 
             self.matched.extend(self.exposed)
             self.exposed.clear()
@@ -249,7 +251,7 @@ class MemoryGame:
             # player found a match
             self.player_correct = True
 
-        else: # no match
+        else:  # no match
             self.wrong.extend(self.exposed)
             self.exposed.clear()
 
@@ -268,19 +270,18 @@ class MemoryGame:
         white_color = (255, 255, 255)
 
         if functionality == "start":
-            self.screen = ((self.columns * (self.card_margin + self.card_len ) + self.card_margin),
+            self.screen = ((self.columns * (self.card_margin + self.card_len) + self.card_margin),
                            (self.rows * (self.card_margin + self.card_len) + self.vert_offset) + self.card_margin)
             self.cards, self.card_val_grid, self.card_grid = self.card_gen()
             self.fill_grid()
             self.display = pygame.display.set_mode(self.screen)
 
             if self.player_mode == 1:
-
-                self.ai_player = ai.AI(self.rows, self.columns, mode = self.ai_difficulty)
+                self.ai_player = ai.AI(self.rows, self.columns, mode=self.ai_difficulty)
 
             self.game_state = 1
 
-            
+
         elif functionality == "quit":
             pygame.quit()
 
@@ -311,35 +312,40 @@ class MemoryGame:
         elif functionality == "human_human":
             self.player_mode = 0
             self.text_list["players_status"] = smallfont.render(self.game_mode[self.player_mode], True, white_color)
-            
+
         elif functionality == "human_ai":
             self.player_mode = 1
             self.text_list["players_status"] = smallfont.render(self.game_mode[self.player_mode], True, white_color)
 
-        elif functionality == "size_4x4":  
+        elif functionality == "size_4x4":
             self.rows = 4
             self.columns = 4
-            self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True, white_color)
-            
+            self.text_list["game_grid_status"] = smallfont.render(str(self.rows) + " x " + str(self.columns), True,
+                                                                  white_color)
+
         elif functionality == "size_4x7":
             self.rows = 4
             self.columns = 7
-            self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True, white_color)
+            self.text_list["game_grid_status"] = smallfont.render(str(self.rows) + " x " + str(self.columns), True,
+                                                                  white_color)
 
         elif functionality == "size_5x8":
             self.rows = 5
             self.columns = 8
-            self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True, white_color)
-            
+            self.text_list["game_grid_status"] = smallfont.render(str(self.rows) + " x " + str(self.columns), True,
+                                                                  white_color)
+
         elif functionality == "size_6x10":
             self.rows = 6
             self.columns = 10
-            self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True, white_color)
+            self.text_list["game_grid_status"] = smallfont.render(str(self.rows) + " x " + str(self.columns), True,
+                                                                  white_color)
 
     """
     YET TO BE IMPLEMENTED:
     Will contain buttons to change number of cards, and if one wants to play with 2 players or against an AI
     """
+
     def option_select(self):
 
         # dark shade of the button
@@ -376,7 +382,7 @@ class MemoryGame:
         smallfont = pygame.font.SysFont('Arial', 35)
 
         text_locations = {key: button_loc[key] for key in button_loc}
-        
+
         text_locations2 = {
             "ai_difficulty": [205, 70],
             "game_difficulty": [180, 205],
@@ -405,7 +411,7 @@ class MemoryGame:
             "players": smallfont.render('Who are playing:', True, white_color),
             "human_human": smallfont.render('vs Human', True, white_color),
             "human_ai": smallfont.render('vs AI', True, white_color),
-            "game_grid": smallfont.render('How many cards:', True , white_color),
+            "game_grid": smallfont.render('How many cards:', True, white_color),
             "size_4x4": smallfont.render('4 x 4', True, white_color),
             "size_4x7": smallfont.render('4 x 7', True, white_color),
             "size_5x8": smallfont.render('5 x 8', True, white_color),
@@ -413,12 +419,13 @@ class MemoryGame:
             "ai_difficulty_status": smallfont.render(self.ai_difficulty, True, white_color),
             "game_difficulty_status": smallfont.render(self.game_difficulty, True, white_color),
             "players_status": smallfont.render(self.game_mode[self.player_mode], True, white_color),
-            "game_grid_status": smallfont.render(str(self.rows)+" x "+str(self.columns), True, white_color)
+            "game_grid_status": smallfont.render(str(self.rows) + " x " + str(self.columns), True, white_color)
         }
-        
+
         self.rows = 4
         self.columns = 4
-        self.text_list["game_grid_status"] = smallfont.render(str(self.rows)+" x "+str(self.columns), True, white_color)
+        self.text_list["game_grid_status"] = smallfont.render(str(self.rows) + " x " + str(self.columns), True,
+                                                              white_color)
 
         while self.game_state == 0:
 
@@ -434,7 +441,8 @@ class MemoryGame:
                 if ev.type == pygame.MOUSEBUTTONDOWN:
                     for key in button_loc:
                         b_width, b_height = button_loc[key]
-                        if b_width <= mouse[0] <= b_width + button_width and b_height <= mouse[1] <= b_height + button_height:
+                        if b_width <= mouse[0] <= b_width + button_width and b_height <= mouse[
+                            1] <= b_height + button_height:
                             self.clunge_function(key)
 
             # mouse coordinates
@@ -442,18 +450,18 @@ class MemoryGame:
 
             # if mouse is hovered on a button it changes to lighter shade
             for width, height in button_loc.values():
-                if width <= mouse[0] <= width+button_width and height <= mouse[1] <= height+button_height:
+                if width <= mouse[0] <= width + button_width and height <= mouse[1] <= height + button_height:
                     pygame.draw.rect(self.display, color_light, [width, height, button_width, button_height])
                 else:
                     pygame.draw.rect(self.display, color_dark, [width, height, button_width, button_height])
 
             # superimposing text onto a button
             for ids in text_locations.keys():
-                self.display.blit(self.text_list[ids], (text_locations[ids][0]+20,text_locations[ids][1]))
+                self.display.blit(self.text_list[ids], (text_locations[ids][0] + 20, text_locations[ids][1]))
 
             # updates the frames of the game
             pygame.display.flip()
-            
+
     def game_loop(self):
         while self.game_state == 1:
             for event in pygame.event.get():
@@ -463,7 +471,7 @@ class MemoryGame:
 
             # Check for mouse click
             self.check_mouseclick()
-            
+
             # if two cards have been turned 
             if len(self.exposed) == 2:
                 self.check_match()
@@ -479,42 +487,42 @@ class MemoryGame:
 
             # Draw Title
             title = self.arial_35.render("Memory", True, self.white)
-            self.display.blit(title, (self.screen[0]/2 - 45, 10))
+            self.display.blit(title, (self.screen[0] / 2 - 45, 10))
 
             # Display who's turn it is
             turn_text = self.arial_20.render(f"Player's {str(self.player_turn + 1)} turn", True, self.white)
-            self.display.blit(turn_text, (self.screen[0]/2 - 45, 55))
+            self.display.blit(turn_text, (self.screen[0] / 2 - 45, 55))
 
             # Display match score
             currentmatch_text = self.arial_20.render(
                 f"Player 1: {self.game_score[0]}    Player 2: {self.game_score[1]}", True, self.white
             )
-            self.display.blit(currentmatch_text, (self.screen[0]/2 - 82, 90))
+            self.display.blit(currentmatch_text, (self.screen[0] / 2 - 82, 90))
 
             # Check win
-            if len(self.matched) == self.rows*self.columns:
+            if len(self.matched) == self.rows * self.columns:
                 self.display.fill(self.black)
                 win = self.arial_200.render("You win!", True, self.green)
                 self.display.blit(win, (40, 105))
                 pygame.display.flip()
                 break
-            
+
             pygame.display.flip()
             if self.wrong:
                 time.sleep(1)
                 self.wrong.clear()
 
     def game_loop_ai(self):
-         while self.game_state == 1:
+        while self.game_state == 1:
             for event in pygame.event.get():
                 # Detect quit
                 if event.type == pygame.QUIT:
                     pygame.quit()
-            
+
             if self.player_turn == 0:
-            # Check for mouse click
+                # Check for mouse click
                 self.check_mouseclick()
-            
+
                 # if two cards have been turned 
                 if len(self.exposed) == 2:
                     self.check_match()
@@ -530,32 +538,34 @@ class MemoryGame:
 
                 # Draw Title
                 title = self.arial_35.render("Memory", True, self.white)
-                self.display.blit(title, (self.screen[0]/2 - 45, 10))
+                self.display.blit(title, (self.screen[0] / 2 - 45, 10))
 
                 # Display who's turn it is
                 turn_text = self.arial_20.render("Player's {} turn".format(str(self.player_turn + 1)), True, self.white)
-                self.display.blit(turn_text, (self.screen[0]/2 - 45, 55))
+                self.display.blit(turn_text, (self.screen[0] / 2 - 45, 55))
 
                 # Display match score
-                currentmatch_text = self.arial_20.render("Player 1: {}    Player 2: {}".format(self.game_score[0],self.game_score[1]), True, self.white)
-                self.display.blit(currentmatch_text, (self.screen[0]/2 - 82, 90))
+                currentmatch_text = self.arial_20.render(
+                    "Player 1: {}    Player 2: {}".format(self.game_score[0], self.game_score[1]), True, self.white)
+                self.display.blit(currentmatch_text, (self.screen[0] / 2 - 82, 90))
 
                 # Check win
-                if len(self.matched) == self.rows*self.columns:
+                if len(self.matched) == self.rows * self.columns:
                     self.display.fill(self.black)
                     win = self.arial_200.render("You win!", True, self.green)
                     self.display.blit(win, (40, 105))
                     pygame.display.flip()
                     break
-                
+
                 pygame.display.flip()
                 if self.wrong:
                     time.sleep(1)
                     self.wrong.clear()
-                
+
             if self.player_turn == 1:
                 self.exposed.append(self.ai_player.make_first_move())
-                self.exposed.append(self.ai_player.make_second_move(self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]]))
+                self.exposed.append(
+                    self.ai_player.make_second_move(self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]]))
                 self.ai_player.update_second_move(self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]])
                 # if two cards have been turned 
                 if len(self.exposed) == 2:
@@ -572,24 +582,25 @@ class MemoryGame:
 
                 # Draw Title
                 title = self.arial_35.render("Memory", True, self.white)
-                self.display.blit(title, (self.screen[0]/2 - 45, 10))
+                self.display.blit(title, (self.screen[0] / 2 - 45, 10))
 
                 # Display who's turn it is
                 turn_text = self.arial_20.render("Player's {} turn".format(str(self.player_turn + 1)), True, self.white)
-                self.display.blit(turn_text, (self.screen[0]/2 - 45, 55))
+                self.display.blit(turn_text, (self.screen[0] / 2 - 45, 55))
 
                 # Display match score
-                currentmatch_text = self.arial_20.render("Player 1: {}    Player 2: {}".format(self.game_score[0],self.game_score[1]), True, self.white)
-                self.display.blit(currentmatch_text, (self.screen[0]/2 - 82, 90))
+                currentmatch_text = self.arial_20.render(
+                    "Player 1: {}    Player 2: {}".format(self.game_score[0], self.game_score[1]), True, self.white)
+                self.display.blit(currentmatch_text, (self.screen[0] / 2 - 82, 90))
 
                 # Check win
-                if len(self.matched) == self.rows*self.columns:
+                if len(self.matched) == self.rows * self.columns:
                     self.display.fill(self.black)
                     win = self.arial_200.render("You win!", True, self.green)
                     self.display.blit(win, (40, 105))
                     pygame.display.flip()
                     break
-                
+
                 pygame.display.flip()
                 if self.wrong:
                     time.sleep(1)
