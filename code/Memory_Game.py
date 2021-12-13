@@ -61,17 +61,17 @@ class memory_game:
 
         self.images = [pygame.image.frombuffer(card.flatten(), (self.card_len, self.card_len), "RGB") for card in cards]
 
-        self.face_down_card_img = pygame.image.load("../memory.png").convert()
+        self.face_down_card_img = pygame.image.load("memory.png").convert()
 
         self.face_down_card = self.face_down_card_img.get_rect()
 
-        self.matched_img = pygame.image.load("../matched.png").convert()
+        self.matched_img = pygame.image.load("matched.png").convert()
         self.matched_card = self.matched_img.get_rect()
 
-        self.selected_card_img = pygame.image.load("../selected.png").convert()
+        self.selected_card_img = pygame.image.load("selected.png").convert()
         self.selected_card = self.selected_card_img.get_rect()
 
-        self.wrong_img = pygame.image.load("../wrong.png").convert()
+        self.wrong_img = pygame.image.load("wrong.png").convert()
         self.wrong_card = self.wrong_img.get_rect()
 
         # fill card_grid with images
@@ -104,11 +104,12 @@ class memory_game:
 
 
     def program(self):
-        if self.game_state == 0:
-            self.option_select()
-        if self.game_state == 1:
-            # gameloop
-            self.game_loop()
+        while True:
+            if self.game_state == 0:
+                self.option_select()
+            if self.game_state == 1:
+                # gameloop
+                self.game_loop()
 
 
     def card_gen(self):
@@ -265,7 +266,31 @@ class memory_game:
             # set back to false after change check.
             self.player_correct = False
 
-            
+    def re_init(self):
+        self.rows = 4
+        self.columns = 6
+        self.screen = ((self.columns * (self.card_margin + self.card_len ) + self.card_margin), (self.rows * (self.card_margin + self.card_len) + self.vert_offset) + self.card_margin)
+        self.display = pygame.display.set_mode(self.screen)
+        
+        self.cards, self.card_val_grid, self.card_grid = self.card_gen()    
+        self.card_generator.set_difficulty(self.difficulty)
+        self.card_generator.set_size(self.card_len)
+        cards = self.card_generator.generate_cards(int(self.rows*self.columns))
+
+        self.images = [pygame.image.frombuffer(card.flatten(), (self.card_len, self.card_len), "RGB") for card in cards]
+
+        # player scores (p1 = 0, p2 = 1)
+        self.game_score = {0: 0, 1: 0}           # current game matches
+
+        # keeps track of who's turn it is
+        self.player_turn = 0 # start with p1 (p1 = 0, p2 = 1)
+        self.player_correct = False # stores if the player found match in their turn
+
+        self.exposed = []
+        self.matched = []
+        self.wrong = []
+
+
     def clunge_function(self, functionality):
         smallfont = pygame.font.SysFont('Arial',35)
         white_color = (255,255,255)
@@ -340,6 +365,8 @@ class memory_game:
     """
     def option_select(self):
 
+        self.re_init()
+
         # dark shade of the button
         color_dark = (100,100,100)
 
@@ -375,11 +402,11 @@ class memory_game:
         
         text_locations2 = {"ai_difficulty" : [205, 70],
         "game_difficulty" : [180, 205],
-        "players" : [155, 335],
+        "players" : [95, 335],
         "game_grid" : [155, 470],
         "ai_difficulty_status" : [355, 70],
         "game_difficulty_status" : [385, 205],
-        "players_status" : [375, 335],
+        "players_status" : [405, 335],
         "game_grid_status" : [385, 470]
         }
 
@@ -396,9 +423,9 @@ class memory_game:
         "game_dif_easy" : smallfont.render('Easy' , True , white_color),
         "game_dif_medium" : smallfont.render('Medium' , True , white_color),
         "game_dif_hard" : smallfont.render('Hard' , True , white_color),
-        "players" : smallfont.render('Who are playing:' , True , white_color),
-        "human_human" : smallfont.render('vs Human' , True , white_color),
-        "human_ai" : smallfont.render('vs AI' , True , white_color),
+        "players" : smallfont.render('You are playing against:' , True , white_color),
+        "human_human" : smallfont.render('Human' , True , white_color),
+        "human_ai" : smallfont.render('AI' , True , white_color),
         "game_grid" : smallfont.render('How many cards:' , True , white_color),
         "size_4x4" : smallfont.render('4 x 4' , True , white_color),
         "size_4x7" : smallfont.render('4 x 7' , True , white_color),
@@ -484,11 +511,31 @@ class memory_game:
 
             # Check win
             if len(self.matched) == self.rows*self.columns:
+                win_text = ""
+                w_win = None
+                if self.game_score[0] > self.game_score[1]:
+                    self.overall_score[0] += 1
+                    win_text = "Player one wins!"
+                    w_win = (self.columns * (self.card_margin + self.card_len ) + self.card_margin) / 2 - 294/2
+                elif self.game_score[1] > self.game_score[0]:
+                    self.overall_score[1] += 1
+                    win_text = "Player two wins!"
+                    w_win = (self.columns * (self.card_margin + self.card_len ) + self.card_margin) / 2 - 294/2
+                else:
+                    win_text = "It's a tie!"
+                    w_win = (self.columns * (self.card_margin + self.card_len ) + self.card_margin) / 2 - 145/2
+
+                w_score = (self.columns * (self.card_margin + self.card_len ) + self.card_margin) / 2 - 215/2
                 self.display.fill(self.black)
-                win = self.arial_200.render("You win!", True, self.green)
-                self.display.blit(win, (40, 105))
+                win = self.arial_50.render(win_text, True, self.green)
+                score1 = self.arial_50.render("Player 1: {}".format(self.overall_score[0]), True, self.green)
+                score2 = self.arial_50.render("Player 2: {}".format(self.overall_score[1]), True, self.green)
+                self.display.blit(win, (w_win, 105))
+                self.display.blit(score1, (w_score, 305))
+                self.display.blit(score2, (w_score, 385))
                 pygame.display.flip()
-                break
+                time.sleep(3)
+                self.game_state = 0
             
             pygame.display.flip()
             if self.wrong:
