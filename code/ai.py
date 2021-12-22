@@ -9,7 +9,7 @@ class AI:
         self.centre = [self.rows / 2, self.cols / 2]
         self.known_cards = -1 * np.ones((int(self.rows * self.cols / 2), 2, 3), dtype=np.int8)
 
-        self.threshold = 0.0
+        self.threshold = 0.5
         if mode == "easy":
             self.forget_prob = 0.7
         elif mode == "medium":
@@ -146,8 +146,8 @@ class AI:
 
     def selection_noise(self, move):
         moves_ago = move[2]
-        sigma_x = self.forget_prob * np.sqrt(moves_ago * self.rows) / 2
-        sigma_y = self.forget_prob * np.sqrt(moves_ago * self.cols) / 2
+        sigma_x = self.forget_prob * np.sqrt(moves_ago * self.rows) / 4
+        sigma_y = self.forget_prob * np.sqrt(moves_ago * self.cols) / 4
         cov = [[sigma_x, 0], [0, sigma_y]]
 
         new_move = np.random.multivariate_normal(move[0:2], cov)
