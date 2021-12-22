@@ -25,6 +25,7 @@ class AI:
         self.known_cards[self.known_cards[:, :, 2] > -1, 2] += 1
         # If opponent has pair remove from board and seen cards (to avoid choosing those cards to turn around)        
         if opp_pair:
+            print("we have a pair")
             self.board[opp_move[0][0]][opp_move[0][1]] = -1
             self.board[opp_move[1][0]][opp_move[1][1]] = -1
             self.known_cards[opp_card[0]] = np.array([[-1, -1, -1], [-1, -1, -1]])
@@ -57,11 +58,15 @@ class AI:
             probability = self.calculate_probability(self.known_cards[first_card, other_pos])
             if probability > self.threshold:
                 # desired_second_move = np.copy(self.known_cards[first_card, other_pos, 0:2])
-                self.second_move = self.selection_noise(self.known_cards[first_card, other_pos])
-
+                original_move = self.known_cards[first_card, other_pos]
+                self.second_move = self.selection_noise(original_move)
+                if self.first_move == self.second_move:
+                    self.second_move = original_move
                 return self.second_move
 
         self.second_move = self.random_move()
+        while self.first_move == self.second_move:
+            self.second_move = self.random_move()
         return self.second_move
 
     def update_second_move(self, second_card):
@@ -72,16 +77,13 @@ class AI:
             print("yeey pair")
         else:
             self.update(second_card, self.second_move)
-        # print(self.known_cards)
 
     # Store a position together with the observed card
     def update(self, card, position):
-        print(card, position)
-        print(self.known_cards[card])
         if self.known_cards[card, 0, 0] == -1:
             self.known_cards[card, 0, 0:2] = position
             self.known_cards[card, 0, 2] = 0
-        elif (self.known_cards[card, 0, 0:2] != position).all():
+        elif (self.known_cards[card, 0, 0:2] != position).all():            
             self.known_cards[card, 1, 0:2] = position
             self.known_cards[card, 1, 2] = 0
         else:
@@ -89,6 +91,7 @@ class AI:
 
         # Indicate that the card at that position has been seen
         self.board[position[0], position[1]] = 1
+
 
     # Return if both position of a pair of cards is known
     def check_known_set(self):
@@ -120,9 +123,11 @@ class AI:
                     possible_positions.append([i, j])
         if possible_positions == []:
             possible_positions = list(zip(*np.where(self.board == 0)))
-
+            if possible_positions == []:
+                possible_positions = list(zip(*np.where(self.board == 1)))
+                
         move = random.choice(possible_positions)
-        position = np.array([move[0], move[1]])
+        # position = np.array([move[0], move[1]])
         # Observe card at the chosen position
 
         return [move[0], move[1]]
@@ -131,7 +136,6 @@ class AI:
     #    return self.full_board[position[0], position[1]]
 
     def calculate_probability(self, position):
-        # VOOR ONS: Naast lege vakjes beter onthouden
         time = position[2]
         if time == -1:
             return 0
@@ -147,7 +151,11 @@ class AI:
         cov = [[sigma_x, 0], [0, sigma_y]]
 
         new_move = np.random.multivariate_normal(move[0:2], cov)
-        return [max(min(int(new_move[0]), self.rows - 1), 0), max(min(int(new_move[1]), self.cols - 1), 0)]
+        new_move = [max(min(int(new_move[0]), self.rows - 1), 0), max(min(int(new_move[1]), self.cols - 1), 0)]
+        if self.board[int(new_move[0]),int(new_move[1])] == -1:
+            return [move[0], move[1]]
+        else:
+            return new_move
 
 # def main():
 #     nr_rows = 4

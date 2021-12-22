@@ -235,11 +235,6 @@ class MemoryGame:
 
     def check_match(self):
         # check if they match
-        if self.player_mode == 1:
-            self.ai_player.observe_opp_move(self.exposed, [self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]],
-                                                           self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]]],
-                                            self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]] ==
-                                            self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]])
         if self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]] == self.card_val_grid[self.exposed[1][0]][
             self.exposed[1][1]]:
 
@@ -576,6 +571,10 @@ class MemoryGame:
 
                 # if two cards have been turned 
                 if len(self.exposed) == 2:
+                    self.ai_player.observe_opp_move(self.exposed, [self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]],
+                                                    self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]]],
+                                                    self.card_val_grid[self.exposed[0][0]][self.exposed[0][1]] ==
+                                                    self.card_val_grid[self.exposed[1][0]][self.exposed[1][1]])
                     self.check_match()
 
                 # Clear screen
@@ -646,6 +645,7 @@ class MemoryGame:
 
                 # Check win
                 if len(self.matched) == self.rows * self.columns:
+                    print("I won!")
                     self.display.fill(self.black)
                     win = self.arial_200.render("You win!", True, self.green)
                     self.display.blit(win, (40, 105))
@@ -656,6 +656,9 @@ class MemoryGame:
                 if self.wrong:
                     time.sleep(1)
                     self.wrong.clear()
+
+                else:
+                    time.sleep(2)
 
 
 mg = MemoryGame()
