@@ -8,7 +8,7 @@ from card import Card
 
 class CardGenerator:
     def __init__(self):
-        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+        #logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
         self.font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
         self.back_text = "Afgerond 3 jaar"
         self.difficulty = 0
@@ -27,12 +27,12 @@ class CardGenerator:
 
     def set_difficulty(self, difficulty):
         self.difficulty = difficulty
-        logging.debug(f'The difficulty has been set to {difficulty}')
+        #logging.debug(f'The difficulty has been set to {difficulty}')
 
     def set_size(self, card_size):
         self.card_size = card_size
         self.generate_back_image()
-        logging.debug(f'the size of the cards has been set to {card_size}x{card_size} pixels')
+        #logging.debug(f'the size of the cards has been set to {card_size}x{card_size} pixels')
 
     def generate_back_image(self):
         background = [random.random() * 120 for i in range(3)]
@@ -111,7 +111,7 @@ class CardGenerator:
 
     def generate_cards(self, n_cards):
         self.cards = []
-        logging.debug(f'Generating cards with difficulty {self.difficulty}')
+        #logging.debug(f'Generating cards with difficulty {self.difficulty}')
         background = np.array([random.random() * 60 for i in range(3)])
         self.n_cards = n_cards
 
@@ -122,15 +122,15 @@ class CardGenerator:
                 front_image=self.generate_front_image(background)
             )
             self.cards.append(new_card)
-        logging.info(f'{len(self.cards)} cards have been generated')
+        #logging.info(f'{len(self.cards)} cards have been generated')
         facings = [card.front_image for card in self.cards]
         return facings
 
     def flip_card(self, index):
         if index >= self.n_cards or index < 0:
-            logging.exception(f'ERROR: invalid index. {index} is outside the range 0-{self.n_cards - 1}')
+            #logging.exception(f'ERROR: invalid index. {index} is outside the range 0-{self.n_cards - 1}')
             return None
-        logging.debug(f'Card {index} has been flipped')
+        #logging.debug(f'Card {index} has been flipped')
         return self.cards[index].flip()
 
     def show_img(self, img):
@@ -149,6 +149,3 @@ def debug():
     cg.show_img(flipped)
     flipped = cg.flip_card(2)
     cg.show_img(flipped)
-
-
-debug()

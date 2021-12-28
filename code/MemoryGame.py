@@ -1,7 +1,6 @@
 import os, random, time, pygame, ai, numpy as np
 from generate_cards import CardGenerator
 
-
 # Load modules and initialize display
 class MemoryGame:
 
@@ -601,11 +600,33 @@ class MemoryGame:
 
                 # Check win
                 if len(self.matched) == self.rows * self.columns:
+                    win_text = ""
+                    w_win = None
+                    if self.game_score[0] > self.game_score[1]:
+                        self.overall_score[0] += 1
+                        win_text = "Player one wins!"
+                        w_win = (self.columns * (self.card_margin + self.card_len) + self.card_margin) / 2 - 294 / 2
+                    elif self.game_score[1] > self.game_score[0]:
+                        self.overall_score[1] += 1
+                        win_text = "Player two wins!"
+                        w_win = (self.columns * (self.card_margin + self.card_len) + self.card_margin) / 2 - 294 / 2
+                    else:
+                        win_text = "It's a tie!"
+                        w_win = (self.columns * (self.card_margin + self.card_len) + self.card_margin) / 2 - 145 / 2
+
+                    w_score = (self.columns * (self.card_margin + self.card_len) + self.card_margin) / 2 - 215 / 2
+
                     self.display.fill(self.black)
-                    win = self.arial_200.render("You win!", True, self.green)
-                    self.display.blit(win, (40, 105))
+                    win = self.arial_50.render(win_text, True, self.green)
+                    score1 = self.arial_50.render("Player 1: {}".format(self.overall_score[0]), True, self.green)
+                    score2 = self.arial_50.render("Player 2: {}".format(self.overall_score[1]), True, self.green)
+                    self.display.blit(win, (w_win, 105))
+                    self.display.blit(score1, (w_score, 305))
+                    self.display.blit(score2, (w_score, 385))
                     pygame.display.flip()
-                    break
+
+                    time.sleep(3)
+                    self.game_state = 0
 
                 pygame.display.flip()
                 if self.wrong:
@@ -645,12 +666,33 @@ class MemoryGame:
 
                 # Check win
                 if len(self.matched) == self.rows * self.columns:
-                    print("I won!")
+                    win_text = ""
+                    w_win = None
+                    if self.game_score[0] > self.game_score[1]:
+                        self.overall_score[0] += 1
+                        win_text = "Player one wins!"
+                        w_win = (self.columns * (self.card_margin + self.card_len) + self.card_margin) / 2 - 294 / 2
+                    elif self.game_score[1] > self.game_score[0]:
+                        self.overall_score[1] += 1
+                        win_text = "Player two wins!"
+                        w_win = (self.columns * (self.card_margin + self.card_len) + self.card_margin) / 2 - 294 / 2
+                    else:
+                        win_text = "It's a tie!"
+                        w_win = (self.columns * (self.card_margin + self.card_len) + self.card_margin) / 2 - 145 / 2
+
+                    w_score = (self.columns * (self.card_margin + self.card_len) + self.card_margin) / 2 - 215 / 2
+
                     self.display.fill(self.black)
-                    win = self.arial_200.render("You win!", True, self.green)
-                    self.display.blit(win, (40, 105))
+                    win = self.arial_50.render(win_text, True, self.green)
+                    score1 = self.arial_50.render("Player 1: {}".format(self.overall_score[0]), True, self.green)
+                    score2 = self.arial_50.render("Player 2: {}".format(self.overall_score[1]), True, self.green)
+                    self.display.blit(win, (w_win, 105))
+                    self.display.blit(score1, (w_score, 305))
+                    self.display.blit(score2, (w_score, 385))
                     pygame.display.flip()
-                    break
+
+                    time.sleep(3)
+                    self.game_state = 0
 
                 pygame.display.flip()
                 if self.wrong:
@@ -659,6 +701,3 @@ class MemoryGame:
 
                 else:
                     time.sleep(2)
-
-
-mg = MemoryGame()

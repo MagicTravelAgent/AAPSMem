@@ -25,7 +25,6 @@ class AI:
         self.known_cards[self.known_cards[:, :, 2] > -1, 2] += 1
         # If opponent has pair remove from board and seen cards (to avoid choosing those cards to turn around)        
         if opp_pair:
-            print("we have a pair")
             self.board[opp_move[0][0]][opp_move[0][1]] = -1
             self.board[opp_move[1][0]][opp_move[1][1]] = -1
             self.known_cards[opp_card[0]] = np.array([[-1, -1, -1], [-1, -1, -1]])
@@ -74,7 +73,6 @@ class AI:
             self.board[self.first_move[0]][self.first_move[1]] = -1
             self.board[self.second_move[0]][self.second_move[1]] = -1
             self.known_cards[self.first_card] = np.array([[-1, -1, -1], [-1, -1, -1]])
-            print("yeey pair")
         else:
             self.update(second_card, self.second_move)
 
